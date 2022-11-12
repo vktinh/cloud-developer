@@ -23,6 +23,8 @@ http://localhost:8082/filteredimage?image_url=https://www.countrysideveterinaryc
 http://image-filter-dev-prefix.us-east-1.elasticbeanstalk.com/filteredimage?image_url=https://www.countrysideveterinaryclinic.org/sites/default/files/interesting-cat-facts.jpg
 
 5. screenshoots was save by  https://github.com/vktinh/cloud-developer/tree/master/course-02/project/image-filter-starter-code/deployment_screenshots
+
+
 ## Tasks
 
 ### Setup Node Environment
