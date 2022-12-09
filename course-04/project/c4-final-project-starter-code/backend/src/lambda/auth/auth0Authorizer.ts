@@ -36,8 +36,10 @@ export const handler = async (
       }
     }
   } catch (e) {
+  
     logger.error('User not authorized', { error: e.message })
-
+    logger.info('User token: ', event.authorizationToken)
+    
     return {
       principalId: 'user',
       policyDocument: {
@@ -73,7 +75,8 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
 
   // get pem data anad convert to cert 
   const pemData = signingKeys.x5c[0]
-  const cert = `-----BEGIN CERTIFICATE-----\n${pemData}\n-----END CERTIFICATE-----\n`
+  const cert = `-----BEGIN CERTIFICATE-----\n${pemData}\n-----END CERTIFICATE-----`
+  logger.info('cert: ', cert)
 
   // verify token
   const verifiedToken = verify(token, cert, { algorithms: ['RS256'] }) as JwtPayload
