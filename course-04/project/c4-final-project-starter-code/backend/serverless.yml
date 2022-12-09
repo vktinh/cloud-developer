@@ -7,7 +7,7 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
-#  - serverless-reqvalidator-plugin
+  - serverless-reqvalidator-plugin
 
 provider:
   name: aws
@@ -58,6 +58,7 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
+          reqValidatorName: RequestBodyValidator
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -98,8 +99,9 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
+          reqValidatorName: RequestBodyValidator
           request:
-            schemas:
+            schema:
               application/json: ${file(models/create-todo-model.json)}
     iamRoleStatements:
       - Effect: Allow
@@ -121,6 +123,7 @@ functions:
         Resource:
           - "*"
 
+
   # DONE_TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements, and request schemas
   UpdateTodo:
@@ -131,6 +134,10 @@ functions:
           path: todos/{todoId}
           cors: true
           authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          request:
+            schema:
+              application/json: ${file(models/update-todo-model.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -163,6 +170,7 @@ functions:
           path: todos/{todoId}
           cors: true
           authorizer: Auth
+          reqValidatorName: RequestBodyValidator
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -194,6 +202,7 @@ functions:
           path: todos/{todoId}/attachment
           cors: true
           authorizer: Auth
+          reqValidatorName: RequestBodyValidator
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -265,6 +274,14 @@ resources:
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
 
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
     # DONE_TODO: Complete the bucket properties below. 
     # Do not forget to add the CorsConfiguration propoerty
     AttachmentsBucket:
