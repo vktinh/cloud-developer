@@ -11,6 +11,9 @@
     },
     "done": {
       "type": "boolean"
+    },
+    "note": {
+      "type": "string"
     }
   },
   "required": [
