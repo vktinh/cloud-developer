@@ -192,7 +192,10 @@ export class EditTodo extends React.PureComponent<
 
       console.log("todo = : " + todo)
       this.setState({
-        todo: todo
+        todo: todo,
+        note: todo.note,
+        name: todo.name,
+        dueDate: todo.dueDate
       })
 
       console.log("onTodoGet end")
