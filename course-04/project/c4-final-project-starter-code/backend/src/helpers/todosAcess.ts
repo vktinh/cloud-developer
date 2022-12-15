@@ -5,6 +5,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate';
+import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
@@ -85,11 +86,12 @@ export class TodosAccess {
           todoId,
           userId
         },
-        UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
+        UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done, note = :note',
         ExpressionAttributeValues: {
           ':name': todoUpdate.name,
           ':dueDate': todoUpdate.dueDate,
-          ':done': todoUpdate.done
+          ':done': todoUpdate.done,
+          ':note': todoUpdate.note
         },
         ExpressionAttributeNames: {
           '#name': 'name'
@@ -136,4 +138,49 @@ export class TodosAccess {
       })
       .promise()
   }
+
+  async updateNoteItem(
+    userId: string,
+    todoId: string,
+    todoUpdate: UpdateTodoRequest
+  ): Promise<TodoUpdate> {
+    logger.info('Updating a todo note')
+
+    await this.docClient
+      .update({
+        TableName: this.todosTable,
+        Key: {
+          todoId,
+          userId
+        },
+        UpdateExpression: 'set note = :note',
+        ExpressionAttributeValues: {
+          ':note': todoUpdate.note
+        },
+        ReturnValues: 'UPDATED_NEW'
+      })
+      .promise()
+
+    return todoUpdate as TodoUpdate 
+  }
+
+  async getTodoById(todoId: string, userId: string): Promise<TodoItem> {
+    logger.info('GetTodoByID')
+
+    const result = await this.docClient
+      .query({
+        TableName: this.todosTable,
+        IndexName: this.indexName,
+        KeyConditionExpression: 'todoId = :todoId AND userId = :userId',
+        ExpressionAttributeValues: {
+          ':todoId': todoId,
+          ':userId': userId
+        }
+      })
+      .promise()
+
+    const items = result.Items[0]
+    return items as TodoItem
+  }
+
 }

@@ -30,6 +30,7 @@ export async function createTodo(
     createdAt: new Date().toISOString(),
     attachmentUrl: s3AttachmentUrl,
     done: false,
+    note:'',
     ...createTodoRequest
   }
 
@@ -49,7 +50,7 @@ export async function updateTodo(
   if (item.userId !== userId) {
     throw new Error('User not authorized to update item')
   }
-  return todosAccess.updateTodoItem(todoId, userId, updateTodoRequest)
+  return todosAccess.updateTodoItem(userId, todoId, updateTodoRequest)
 }
 
 export async function deleteTodo(
@@ -71,4 +72,15 @@ export async function deleteTodo(
 export async function createAttachmentPresignUrl(todoId: string): Promise<string> {
   logger.info('Generating upload url')
   return attachmentUtils.generateUploadUrl(todoId)
+}
+
+export async function updateNoteItem(userId: string, todoId: string, note: UpdateTodoRequest): Promise<UpdateTodoRequest> {
+  logger.info('start todos.updateShowItem: ' + userId + ", " + todoId + ", " + note);
+
+  return todosAccess.updateNoteItem(userId, todoId, note)
+}
+
+export async function getTodoById(userId: string, todoId: string): Promise<TodoItem> {
+  logger.info('Get todo item by todoid')
+  return todosAccess.getTodoById(todoId, userId)
 }
